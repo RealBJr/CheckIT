@@ -1,12 +1,11 @@
 package EmailProcessing;
 
+import java.net.URL;
+import java.util.Arrays;
 import java.util.Properties;
 
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.Store;
+import javax.mail.*;
+import javax.mail.search.FlagTerm;
 
 public class ReadMails {
 	/**
@@ -39,18 +38,22 @@ public class ReadMails {
 			store.connect(host, user, password);
 
 			// Open the Folder
-			Folder folder = store.getFolder("INBOX");
+			Folder folder = store.getFolder("[Gmail]/Important");
 			folder.open(Folder.READ_ONLY);
 			Message[] messages = folder.getMessages();
-			Message m = messages[messages.length - pos];
 
-			if (m.isMimeType("multipart/alternative") || m.isMimeType("text/*")) {
+			Message m = messages.length - pos >= 0 ? messages[messages.length - pos] : null;
+			if (m == null) {
+				System.out.println("User flag is empty");
+			} else if (m.isMimeType("multipart/alternative")) {
 				Multipart mp = (Multipart) m.getContent();
 				for (int i = 0; i < mp.getCount(); i++) {
 					if (mp.getBodyPart(i).isMimeType("text/plain")) {
 						msg += (String) mp.getBodyPart(i).getContent();
 					}
 				}
+			} else {
+				System.out.println("Subject = " + m.getSubject());
 			}
 
 			store.close();
