@@ -1,11 +1,7 @@
 package EmailProcessing;
 
-import java.net.URL;
-import java.util.Arrays;
 import java.util.Properties;
-
 import javax.mail.*;
-import javax.mail.search.FlagTerm;
 
 public class ReadMails {
 	/**
@@ -63,6 +59,38 @@ public class ReadMails {
 			System.exit(1);
 		}
 		return msg;
+	}
+
+	public static Message[] getImportantEmails(String host, String user, String password) {
+		Message[] messages = null;
+		try {
+			// Get a Properties object
+			Properties props = System.getProperties();
+
+			// Change props
+			props.put("mail.from", user);
+			props.put("mail.store.protocol", "imap");
+			props.put("mail.imap.ssl.enable", "true");
+
+			// Get a Session object
+			Session session = Session.getInstance(props);
+//			session.setDebug(true);
+
+			// Get a Store object
+			Store store = session.getStore();
+			store.connect(host, user, password);
+
+			// Open the Folder
+			Folder folder = store.getFolder("[Gmail]/Important");
+			folder.open(Folder.READ_ONLY);
+			messages = folder.getMessages();
+
+		} catch (Exception ex) {
+			System.out.println("Oops, got exception! " + ex.getMessage());
+			ex.printStackTrace();
+			System.exit(1);
+		}
+		return messages;
 	}
 
 }
