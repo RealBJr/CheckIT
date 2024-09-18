@@ -1,7 +1,9 @@
 export default function HomeLogo() {
     return (
         <>
-            <p>Hello</p>
+            <a href="#">
+                <img></img>
+            </a>
         </>
     );
 }
